@@ -1,0 +1,101 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block object-tools %}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+    <!-- Highlight.js CSS (light theme fallback) -->
+    <link id="highlight-theme" rel="stylesheet"
+          href="{% static 'ophix_docs/highlight/github.min.css' %}">
+
+    <!-- Highlight.js core -->
+    <script src="{% static 'ophix_docs/highlight/highlight.min.js' %}"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const themeLink = document.getElementById('highlight-theme');
+
+        // Dynamically switch light/dark theme
+        function updateTheme(e) {
+            const darkMode = e.matches;
+            themeLink.href = darkMode
+                ? "{% static 'ophix_docs/highlight/github-dark.min.css' %}"
+                : "{% static 'ophix_docs/highlight/github.min.css' %}";
+        }
+
+        const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        updateTheme(darkMedia);
+        darkMedia.addEventListener('change', updateTheme);
+
+        // Apply syntax highlighting and add copy buttons
+        document.querySelectorAll("pre code").forEach((block) => {
+            hljs.highlightElement(block);
+
+            // Create copy button
+            const btn = document.createElement('button');
+            btn.textContent = "Copy";
+            btn.className = "copy-code-btn";
+
+            // Compute colors based on current theme
+            const fg = getComputedStyle(document.body).color;
+            btn.style.backgroundColor = fg + "33"; // semi-transparent
+            btn.style.color = fg;
+
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.innerText);
+                btn.textContent = "Copied!";
+                setTimeout(() => btn.textContent = "Copy", 1000);
+            });
+
+            // Style button and position
+            const pre = block.parentNode;
+            pre.style.position = "relative";
+            btn.style.position = "absolute";
+            btn.style.top = "0.2em";
+            btn.style.right = "0.2em";
+            btn.style.fontSize = "0.8em";
+            btn.style.padding = "0.2em 0.4em";
+            btn.style.border = "1px solid";
+            btn.style.borderRadius = "3px";
+            btn.style.cursor = "pointer";
+
+            pre.appendChild(btn);
+        });
+    });
+    </script>
+
+    <style>
+    .copy-code-btn:hover {
+        opacity: 0.85;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+<p class="back-to-index">
+    <a href="{% url 'admin:ophix_docs_docpage_changelist' %}">← Back to Index</a>
+</p>
+
+<hr>
+
+<div class="ophix-docs-content">
+    {{ rendered_markdown|safe }}
+</div>
+
+<style>
+.back-to-index a {
+    text-decoration: none;
+    font-weight: bold;
+}
+.ophix-docs-content {
+    margin-top: 1em;
+}
+pre {
+    padding: 1em;
+    overflow-x: auto;
+    border-radius: 6px;
+}
+</style>
+{% endblock %}

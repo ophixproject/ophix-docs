@@ -1,0 +1,121 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<div class="ophix-docs-index">
+
+{% for section, data in pages_by_section.items %}
+    <div class="doc-section">
+    <h3 class="doc-section-title"
+        data-section="{{ section|slugify }}">
+        <button type="button" class="toggle-btn">
+            {% if data.collapsed %}▶{% else %}▼{% endif %}
+        </button>
+        <span class="section-label">{{ section }}</span>
+    </h3>
+
+        <ul class="doc-pages"{% if data.collapsed %} style="display:none;"{% endif %}>
+            {% for page in data.pages %}
+                <li>
+                    <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}">
+                        {{ page.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+
+</div>
+
+<!-- Collapsible JS -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const STORAGE_KEY = "ophix_docs_sections";
+
+    let savedState = {};
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        savedState = JSON.parse(stored);
+    }
+
+    function saveState() {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(savedState));
+    }
+
+    document.querySelectorAll(".doc-section-title").forEach(function(title) {
+
+        const sectionKey = title.dataset.section;
+        const sectionDiv = title.closest(".doc-section");
+        const ul = sectionDiv.querySelector(".doc-pages");
+        const btn = title.querySelector(".toggle-btn");
+
+        // Apply saved state
+        if (savedState.hasOwnProperty(sectionKey)) {
+            if (savedState[sectionKey]) {
+                ul.style.display = "none";
+                btn.textContent = "▶";
+            } else {
+                ul.style.display = "block";
+                btn.textContent = "▼";
+            }
+        }
+
+        function toggleSection() {
+            const isCollapsed = ul.style.display === "none";
+
+            if (isCollapsed) {
+                ul.style.display = "block";
+                btn.textContent = "▼";
+                savedState[sectionKey] = false;
+            } else {
+                ul.style.display = "none";
+                btn.textContent = "▶";
+                savedState[sectionKey] = true;
+            }
+
+            saveState();
+        }
+
+        title.addEventListener("click", function(e) {
+            if (e.target.classList.contains("toggle-btn")) return;
+            toggleSection();
+        });
+
+        btn.addEventListener("click", function() {
+            toggleSection();
+        });
+
+    });
+
+});
+</script>
+
+
+<!-- Optional CSS -->
+<style>
+.doc-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
+    margin: 0.5em 0;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 0;
+}
+
+.doc-pages {
+    margin-left: 1.5em;
+    list-style-type: disc;
+}
+
+</style>
+
+{% endblock %}

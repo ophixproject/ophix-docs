@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ophix-docs"
+version = "2026.03.04.02"
+description = "Reusable Django admin documentation app for Ophix servers"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Ophix Project"}
+]
+dependencies = [
+    "Django>=4.2",
+    "markdown>=3.4",
+    "python-frontmatter>=1.0",
+    "pygments>=2.19.2"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ophix_docs = [
+    "templates/**/*.html",
+    "static/**/*",
+    "docs/**/*",
+    "deploy_templates/**/*",
+]
+
+[project.entry-points."ophix.plugins"]
+ophix_docs = "ophix_docs"
