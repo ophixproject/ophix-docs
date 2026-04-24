@@ -30,6 +30,7 @@ ophix_docs = [
     "templates/**/*.html",
     "static/**/*",
     "docs/**/*",
+    "locale/**/*",
     "deploy_templates/**/*",
 ]
 

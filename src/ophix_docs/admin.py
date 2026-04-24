@@ -6,6 +6,7 @@ from django.db.models import Case, When, Value, IntegerField
 from django.template.response import TemplateResponse
 from django.utils import translation
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 import markdown
 
 from .models import DocPage, DocSection
@@ -79,7 +80,7 @@ if getattr(settings, "OPHIX_DOCS_ENABLED", True):
             context = {
                 **self.admin_site.each_context(request),
                 "pages_by_section": ordered_sections,
-                "title": "Documentation",
+                "title": _("Documentation"),
                 "language": language,
             }
 

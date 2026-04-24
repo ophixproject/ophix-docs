@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 class OphixDocsConfig(AppConfig):
@@ -11,5 +12,5 @@ class OphixDocsConfig(AppConfig):
         return getattr(
             settings,
             "OPHIX_DOCS_APP_LABEL",
-            "Documentation"
+            _("Documentation")
         )
