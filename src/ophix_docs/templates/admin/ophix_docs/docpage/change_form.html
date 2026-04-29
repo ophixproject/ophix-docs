@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block object-tools %}{% endblock %}
 
@@ -35,7 +35,7 @@
 
             // Create copy button
             const btn = document.createElement('button');
-            btn.textContent = "Copy";
+            btn.textContent = "{% trans 'Copy' %}";
             btn.className = "copy-code-btn";
 
             // Compute colors based on current theme
@@ -45,8 +45,8 @@
 
             btn.addEventListener('click', () => {
                 navigator.clipboard.writeText(block.innerText);
-                btn.textContent = "Copied!";
-                setTimeout(() => btn.textContent = "Copy", 1000);
+                btn.textContent = "{% trans 'Copied!' %}";
+                setTimeout(() => btn.textContent = "{% trans 'Copy' %}", 1000);
             });
 
             // Style button and position
@@ -75,7 +75,7 @@
 
 {% block content %}
 <p class="back-to-index">
-    <a href="{% url 'admin:ophix_docs_docpage_changelist' %}">← Back to Index</a>
+    <a href="{% url 'admin:ophix_docs_docpage_changelist' %}">← {% trans "Back to Index" %}</a>
 </p>
 
 <hr>
