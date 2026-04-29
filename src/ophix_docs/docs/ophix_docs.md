@@ -1,7 +1,7 @@
 ---
 title: Documentation System
 slug: ophix-docs
-order: 1
+order: 500
 section: Extensions
 ---
 
