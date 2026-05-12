@@ -145,17 +145,17 @@ ophix-manage ophix_docs_update \
 
 ## Operator custom documentation
 
-Operators can add their own documentation pages alongside the built-in app docs. The primary docs path is always scanned when the import command runs — no extra flags are required.
+Operators can add their own documentation pages alongside the built-in app docs.
 
-### Configure the path
+### Adding custom pages
 
-By default, the command scans `BASE_DIR/docs` (the `docs/` folder next to the installed package). To use a different location, set `OPHIX_DOCS_PATH` in `.env`:
+Create a directory containing your markdown files and run the import with `--path`:
 
-```ini
-OPHIX_DOCS_PATH=/home/websites/credserver/docs
+```bash
+ophix-manage ophix_docs_update --path /home/ophix/docs --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
 ```
 
-Create the directory and add markdown files following the same front matter format as built-in docs:
+Both the custom path and the app docs are imported in the same run. Markdown files follow the same front matter format as built-in docs:
 
 ```text
 ---
@@ -168,7 +168,7 @@ section: Operations
 ## Content goes here
 ```
 
-If you are creating a new section, include a `sections.yaml` alongside your markdown files:
+To create a new section, include a `sections.yaml` alongside your markdown files:
 
 ```yaml
 sections:
@@ -176,15 +176,19 @@ sections:
     collapsed: false
 ```
 
-### Running the import
-
-No change to the import command is needed — the primary path is always included alongside any `--include-app-docs` sources:
-
-```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
-```
+Without a `sections.yaml` entry the section will still appear, but its collapsed state cannot be controlled.
 
 Your custom pages will appear in the admin alongside the built-in docs.
+
+### Persistent custom path
+
+If you always import from the same custom directory, set `OPHIX_DOCS_PATH` in `.env` so the path is picked up automatically without `--path`:
+
+```ini
+OPHIX_DOCS_PATH=/home/ophix/docs
+```
+
+With this set, the plain `ophix_docs_update` command (no `--path`) will include your custom directory every time.
 
 ### Removing custom pages
 
