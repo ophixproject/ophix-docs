@@ -28,6 +28,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 ophix_docs = [
+    "OPHIX_RELEASE_NOTES.md",
     "templates/**/*.html",
     "static/**/*",
     "docs/**/*",
