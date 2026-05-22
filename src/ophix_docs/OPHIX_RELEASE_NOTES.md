@@ -1,6 +1,6 @@
 # Ophix Docs Release Notes
 
-## Unreleased
+## 2026.05.22.01
 
 - Management commands renamed for consistency with `ophix-manage` context:
   `ophix_docs_update` → `update_docs`, `ophix_docs_purge` → `purge_docs`,
