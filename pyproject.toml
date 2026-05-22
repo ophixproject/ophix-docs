@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ophix-docs"
-version = "2026.05.22.01"
+version = "2026.05.22.02"
 description = "Reusable Django admin documentation app for Ophix servers"
 readme = "README.md"
 requires-python = ">=3.10"
