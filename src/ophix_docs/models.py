@@ -43,7 +43,7 @@ class DocPage(models.Model):
         max_length=500,
         blank=True,
         default="",
-        help_text=_("Absolute path to the source markdown file. Set by ophix_docs_update; blank for admin-created pages."),
+        help_text=_("Absolute path to the source markdown file. Set by update_docs; blank for admin-created pages."),
     )
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
 

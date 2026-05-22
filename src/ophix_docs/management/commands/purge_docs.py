@@ -1,27 +1,27 @@
 """
-ophix-manage ophix_docs_purge
+ophix-manage purge_docs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Remove documentation pages from the database.
 
 Three modes:
 
   Specific slugs:
-    ophix-manage ophix_docs_purge my-slug another-slug
+    ophix-manage purge_docs my-slug another-slug
 
   All pages (for this language):
-    ophix-manage ophix_docs_purge --all
+    ophix-manage purge_docs --all
 
   Pages whose source files have been removed from disk:
-    ophix-manage ophix_docs_purge --deleted
+    ophix-manage purge_docs --deleted
 
   Preview without deleting:
-    ophix-manage ophix_docs_purge --all --dry-run
-    ophix-manage ophix_docs_purge --deleted --dry-run
+    ophix-manage purge_docs --all --dry-run
+    ophix-manage purge_docs --deleted --dry-run
 
 Notes
 -----
 Sections are not automatically removed when their last page is deleted.
-To clean up empty sections, re-run ophix_docs_update — it will rebuild section
+To clean up empty sections, re-run update_docs — it will rebuild section
 ordering from whatever pages remain. Empty sections do no harm in the admin.
 """
 
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             '--deleted',
             action='store_true',
             help=(
-                "Delete pages whose source_path was set by ophix_docs_update "
+                "Delete pages whose source_path was set by update_docs "
                 "but the file no longer exists on disk."
             ),
         )

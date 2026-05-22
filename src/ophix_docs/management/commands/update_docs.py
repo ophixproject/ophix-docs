@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = (
         "Import and update markdown docs from the primary docs path and optional app docs.\n\n"
         "This command only creates and updates — it never deletes. "
-        "To remove pages, use ophix_docs_purge."
+        "To remove pages, use purge_docs."
     )
 
     def add_arguments(self, parser):
@@ -105,7 +105,7 @@ class Command(BaseCommand):
     def process_file(self, md_file: Path, language: str):
         """
         Parse and upsert a single markdown file.
-        Records the absolute source path on the page so ophix_docs_purge --deleted can find it.
+        Records the absolute source path on the page so purge_docs --deleted can find it.
         Returns (section_name, page_order).
         """
         text = md_file.read_text(encoding='utf-8').strip()
