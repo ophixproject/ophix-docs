@@ -1,5 +1,10 @@
 # Ophix Docs Release Notes
 
+## Unreleased
+
+- Added migration 0009: `DocPage.source_path` help text updated to reference
+  `update_docs` (was `ophix_docs_update`).
+
 ## 2026.05.22.01
 
 - Management commands renamed for consistency with `ophix-manage` context:
