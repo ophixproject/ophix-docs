@@ -5,20 +5,39 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ophix-docs"
 version = "2026.05.22.02"
-description = "Reusable Django admin documentation app for Ophix servers"
+description = "Inline markdown documentation plugin for Ophix fleet management servers"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
     {name = "Ophix Project"}
 ]
+keywords = ["django", "ophix", "documentation", "admin", "fleet management"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: System :: Systems Administration",
+]
 dependencies = [
-    "Django>=4.2",
-    "ophix-server-base>=2026.05.01.01",
+    "ophix-server-base>=2026.05.26.01",
     "markdown>=3.4",
     "python-frontmatter>=1.0",
     "pygments>=2.19.2"
 ]
+
+[project.urls]
+Homepage = "https://ophix.io"
+Documentation = "https://github.com/ophixproject/ophix-docs#readme"
+Source = "https://github.com/ophixproject/ophix-docs"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -10,8 +10,6 @@ come with it. A single management command loads them all.
 
 ## Installation
 
-Install alongside [ophix-server-base](https://github.com/ophixproject/ophix-server-base):
-
 ```bash
 pip install ophix-docs
 ```
@@ -26,7 +24,7 @@ Each Ophix package that ships documentation contains a `docs/` directory with:
 - A `sections.yaml` file declaring the section names used by those pages
 
 Documentation is **not loaded automatically on install** — it must be imported into the
-database with `ophix_docs_update`. If you used `run_install` to deploy your server,
+database with `update_docs`. If you used `run_install` to deploy your server,
 this was done for you. After upgrading packages, re-run the command to pick up any
 new or updated pages.
 
@@ -45,7 +43,7 @@ No further action is needed for a fresh install.
 Discover which installed packages have docs:
 
 ```bash
-ophix-manage ophix_docs_list_sources
+ophix-manage list_docs_sources
 ```
 
 Then load them. Use the Python module names (underscores, not hyphens), not pip
@@ -54,31 +52,31 @@ package names. Include all relevant modules for your server type:
 **Credential server:**
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --include-app-docs ophix.core,ophix_creds,ophix_docs
 ```
 
 **Configuration server:**
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_confs,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --include-app-docs ophix.core,ophix_confs,ophix_docs
 ```
 
 **Certificate server:**
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_certs,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --include-app-docs ophix.core,ophix_certs,ophix_docs
 ```
 
 **Certificate server with in-admin CA:**
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_certs,ophix_certs_ca,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --include-app-docs ophix.core,ophix_certs,ophix_certs_ca,ophix_docs
 ```
 
 **Zone server:**
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs ophix.core,ophix_zones,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --include-app-docs ophix.core,ophix_zones,ophix_docs
 ```
 
 The command is idempotent — safe to re-run at any time. It only creates and updates;
@@ -88,19 +86,19 @@ it never deletes pages.
 
 ## Management commands
 
-### `ophix_docs_list_sources`
+### `list_docs_sources`
 
 List all installed apps that contain valid Ophix docs (a `docs/` directory with
 `.md` files and a `sections.yaml`).
 
 ```bash
-ophix-manage ophix_docs_list_sources
+ophix-manage list_docs_sources
 ```
 
 Use `--json` for machine-readable output:
 
 ```bash
-ophix-manage ophix_docs_list_sources --json
+ophix-manage list_docs_sources --json
 ```
 
 This is the recommended starting point after installing or upgrading packages — run
@@ -108,13 +106,13 @@ it to confirm which app names to pass to `--include-app-docs`.
 
 ---
 
-### `ophix_docs_update`
+### `update_docs`
 
 Import and update documentation pages from installed app docs directories.
 Creates new pages and updates existing ones. Never deletes.
 
 ```bash
-ophix-manage ophix_docs_update --include-app-docs <comma-separated module names>
+ophix-manage update_docs --include-app-docs <comma-separated module names>
 ```
 
 **Options:**
@@ -127,23 +125,23 @@ ophix-manage ophix_docs_update --include-app-docs <comma-separated module names>
 
 ---
 
-### `ophix_docs_purge`
+### `purge_docs`
 
 Remove documentation pages from the database.
 
 ```bash
 # Remove specific pages by slug
-ophix-manage ophix_docs_purge my-slug another-slug
+ophix-manage purge_docs my-slug another-slug
 
 # Remove all pages for the default language
-ophix-manage ophix_docs_purge --all
+ophix-manage purge_docs --all
 
 # Remove pages whose source files no longer exist on disk
-ophix-manage ophix_docs_purge --deleted
+ophix-manage purge_docs --deleted
 
 # Preview without deleting
-ophix-manage ophix_docs_purge --all --dry-run
-ophix-manage ophix_docs_purge --deleted --dry-run
+ophix-manage purge_docs --all --dry-run
+ophix-manage purge_docs --deleted --dry-run
 ```
 
 **Options:**
@@ -157,13 +155,13 @@ ophix-manage ophix_docs_purge --deleted --dry-run
 
 ---
 
-### `ophix_docs_export`
+### `export_docs`
 
 Export documentation pages from the database back to markdown files. Useful for
 backing up custom docs or extracting pages for translation.
 
 ```bash
-ophix-manage ophix_docs_export --output-dir /path/to/export/
+ophix-manage export_docs --output-dir /path/to/export/
 ```
 
 **Options:**
@@ -183,7 +181,7 @@ with `--language`:
 
 ```bash
 pip install ophix-lang-fr-creds
-ophix-manage ophix_docs_update --include-app-docs ophix_lang_fr_creds --language fr
+ophix-manage update_docs --include-app-docs ophix_lang_fr_creds --language fr
 ```
 
 ---
@@ -191,7 +189,7 @@ ophix-manage ophix_docs_update --include-app-docs ophix_lang_fr_creds --language
 ## Writing custom docs
 
 Any markdown file placed in a `docs/` directory of an installed Django app can be
-imported by `ophix_docs_update`. Each file requires YAML front matter:
+imported by `update_docs`. Each file requires YAML front matter:
 
 ```yaml
 ---
