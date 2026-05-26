@@ -33,11 +33,11 @@ By default it reads from the path set in `OPHIX_DOCS_PATH` (defaults to a `docs/
 ```bash
 # On a credential server:
 ophix-manage update_docs \
-  --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
+  --include-app-docs ophix.core,ophix_creds,ophix_docs
 
 # On a configuration server:
 ophix-manage update_docs \
-  --include-app-docs ophix.core,ophix_confs,ophix_docs,ophix_theme_tools
+  --include-app-docs ophix.core,ophix_confs,ophix_docs
 ```
 
 Each app listed must be installed and must contain a `docs/` directory inside its package folder. If the directory is not found, a warning is printed and that app is skipped. The flag does **not** auto-discover installed apps — you must name them explicitly.
@@ -131,14 +131,14 @@ Each app defines only the sections it needs. Multiple apps can contribute pages 
 
 ```bash
 ophix-manage update_docs \
-  --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
+  --include-app-docs ophix.core,ophix_creds,ophix_docs
 ```
 
 For a configuration server:
 
 ```bash
 ophix-manage update_docs \
-  --include-app-docs ophix.core,ophix_confs,ophix_docs,ophix_theme_tools
+  --include-app-docs ophix.core,ophix_confs,ophix_docs
 ```
 
 ---
@@ -152,7 +152,7 @@ Operators can add their own documentation pages alongside the built-in app docs.
 Create a directory containing your markdown files and run the import with `--path`:
 
 ```bash
-ophix-manage update_docs --path /home/ophix/docs --include-app-docs ophix.core,ophix_creds,ophix_docs,ophix_theme_tools
+ophix-manage update_docs --path /home/ophix/docs --include-app-docs ophix.core,ophix_creds,ophix_docs
 ```
 
 Both the custom path and the app docs are imported in the same run. Markdown files follow the same front matter format as built-in docs:
