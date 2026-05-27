@@ -1,5 +1,11 @@
 # Ophix Docs Release Notes
 
+## 2026.05.27.01
+
+- Docs tree arrows and bullet markers now use the theme module color
+  (`--admin-interface-module-background-color`) instead of the browser default,
+  so they match the active theme across all colour schemes.
+
 ## 2026.05.22.02
 
 - Added migration 0009: `DocPage.source_path` help text updated to reference
