@@ -1,5 +1,9 @@
 # Ophix Docs Release Notes
 
+## 2026.05.27.03
+
+- Doc page headings (h1/h2) now use the theme module color; h3/h4 use the generic link color.
+
 ## 2026.05.27.02
 
 - Docs section headings now use the theme module color to match arrows and bullets.
