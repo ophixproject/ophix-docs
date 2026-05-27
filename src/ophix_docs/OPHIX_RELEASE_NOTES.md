@@ -1,5 +1,9 @@
 # Ophix Docs Release Notes
 
+## 2026.05.27.02
+
+- Docs section headings now use the theme module color to match arrows and bullets.
+
 ## 2026.05.27.01
 
 - Docs tree arrows and bullet markers now use the theme module color
