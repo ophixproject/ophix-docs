@@ -232,6 +232,6 @@ ophix-manage list_docs_sources
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `OPHIX_DOCS_ENABLED` | `true` | Set to `false` to hide the Documentation section from the admin entirely |
+| `SHOW_DOCS_MODEL` | `true` | Set to `false` to hide the Documentation section from the admin entirely |
 | `OPHIX_DOCS_PATH` | `BASE_DIR/docs` | Path to the primary docs folder |
 | `OPHIX_DOCS_APP_LABEL` | `Documentation` | Admin section label |

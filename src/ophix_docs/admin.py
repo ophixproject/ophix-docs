@@ -12,7 +12,7 @@ import markdown
 from .models import DocPage, DocSection
 
 
-if getattr(settings, "OPHIX_DOCS_ENABLED", True):
+if getattr(settings, "SHOW_DOCS_MODEL", True):
     @admin.register(DocPage)
     class DocPageAdmin(admin.ModelAdmin):
 
