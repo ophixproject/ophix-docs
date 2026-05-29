@@ -17,17 +17,20 @@
     document.addEventListener("DOMContentLoaded", function() {
         const themeLink = document.getElementById('highlight-theme');
 
-        // Dynamically switch light/dark theme
-        function updateTheme(e) {
-            const darkMode = e.matches;
+        // Switch highlight theme to match Django admin's [data-theme="dark"] toggle.
+        function updateTheme() {
+            const darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
             themeLink.href = darkMode
                 ? "{% static 'ophix_docs/highlight/github-dark.min.css' %}"
                 : "{% static 'ophix_docs/highlight/github.min.css' %}";
         }
 
-        const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
-        updateTheme(darkMedia);
-        darkMedia.addEventListener('change', updateTheme);
+        updateTheme();
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                if (m.attributeName === 'data-theme') updateTheme();
+            });
+        }).observe(document.documentElement, { attributes: true });
 
         // Apply syntax highlighting and add copy buttons
         document.querySelectorAll("pre code").forEach((block) => {
