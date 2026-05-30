@@ -1,5 +1,11 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.05
+
+- Fix section collapsed/expanded state not persisting: switched from sessionStorage
+  to localStorage, and fixed restore logic to correctly re-expand sections that were
+  collapsed by default but expanded by the user.
+
 ## 2026.05.30.04
 
 - Renamed "Pages" to "Contents" in sidebar; docs index heading changed to "Table

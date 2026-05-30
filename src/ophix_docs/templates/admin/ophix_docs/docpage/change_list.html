@@ -183,11 +183,11 @@ document.addEventListener("DOMContentLoaded", function() {
     var sectionState = {};
     var pageState = {};
 
-    try { sectionState = JSON.parse(sessionStorage.getItem(SECTION_KEY)) || {}; } catch(e) {}
-    try { pageState = JSON.parse(sessionStorage.getItem(PAGE_KEY)) || {}; } catch(e) {}
+    try { sectionState = JSON.parse(localStorage.getItem(SECTION_KEY)) || {}; } catch(e) {}
+    try { pageState = JSON.parse(localStorage.getItem(PAGE_KEY)) || {}; } catch(e) {}
 
-    function saveSections() { sessionStorage.setItem(SECTION_KEY, JSON.stringify(sectionState)); }
-    function savePages() { sessionStorage.setItem(PAGE_KEY, JSON.stringify(pageState)); }
+    function saveSections() { localStorage.setItem(SECTION_KEY, JSON.stringify(sectionState)); }
+    function savePages() { localStorage.setItem(PAGE_KEY, JSON.stringify(pageState)); }
 
     // Section collapse/expand
     document.querySelectorAll(".doc-section").forEach(function(section) {
@@ -203,8 +203,8 @@ document.addEventListener("DOMContentLoaded", function() {
             saveSections();
         }
 
-        if (sectionState.hasOwnProperty(key) && !sectionState[key]) {
-            setCollapsed(true);
+        if (sectionState.hasOwnProperty(key)) {
+            setCollapsed(!sectionState[key]);
         }
 
         hdr.addEventListener("click", function(e) {
