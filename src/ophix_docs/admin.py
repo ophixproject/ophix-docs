@@ -194,6 +194,10 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
             text = re.sub(r"^\s*\d+\.\s+", "", text, flags=re.MULTILINE)
             # Blockquotes
             text = re.sub(r"^\s*>\s?", "", text, flags=re.MULTILINE)
+            # Table separator rows
+            text = re.sub(r"^\|[\s|:-]+\|\s*$", "", text, flags=re.MULTILINE)
+            # Table content rows → strip pipes, join cells
+            text = re.sub(r"^\|(.+)\|$", lambda m: "  ".join(c.strip() for c in m.group(1).split("|")), text, flags=re.MULTILINE)
             # Collapse whitespace
             text = re.sub(r"\n{3,}", "\n\n", text)
             return text.strip()

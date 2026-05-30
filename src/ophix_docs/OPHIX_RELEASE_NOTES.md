@@ -1,5 +1,11 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.09
+
+- Search snippet stripping now also handles markdown tables: separator rows (`| --- |`)
+  are removed entirely and content rows have their pipe delimiters stripped, leaving
+  just the cell values as readable text.
+
 ## 2026.05.30.08
 
 - Search snippets are now stripped of markdown syntax before display — headings, bold,
