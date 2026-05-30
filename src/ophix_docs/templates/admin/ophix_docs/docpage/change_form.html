@@ -112,5 +112,73 @@ pre {
     overflow-x: auto;
     border-radius: 6px;
 }
+mark {
+    background: rgba(255, 220, 0, 0.45);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+[data-theme="dark"] mark {
+    background: rgba(255, 200, 0, 0.3);
+}
 </style>
+
+{% if search_query %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var query = "{{ search_query|escapejs }}";
+    if (!query) return;
+
+    var content = document.querySelector(".ophix-docs-content");
+    if (!content) return;
+
+    var walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(node) {
+            var p = node.parentNode;
+            while (p && p !== content) {
+                var tag = p.tagName && p.tagName.toUpperCase();
+                if (tag === "PRE" || tag === "CODE") return NodeFilter.FILTER_REJECT;
+                p = p.parentNode;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    });
+
+    var nodes = [];
+    var node;
+    while ((node = walker.nextNode())) nodes.push(node);
+
+    var lowerQuery = query.toLowerCase();
+    var firstMark = null;
+
+    nodes.forEach(function(textNode) {
+        var text = textNode.nodeValue;
+        var lowerText = text.toLowerCase();
+        if (lowerText.indexOf(lowerQuery) === -1) return;
+
+        var frag = document.createDocumentFragment();
+        var remaining = text;
+        var lowerRemaining = lowerText;
+        var pos;
+
+        while ((pos = lowerRemaining.indexOf(lowerQuery)) !== -1) {
+            if (pos > 0) frag.appendChild(document.createTextNode(remaining.slice(0, pos)));
+            var mark = document.createElement("mark");
+            mark.textContent = remaining.slice(pos, pos + query.length);
+            if (!firstMark) firstMark = mark;
+            frag.appendChild(mark);
+            remaining = remaining.slice(pos + query.length);
+            lowerRemaining = lowerRemaining.slice(pos + query.length);
+        }
+        if (remaining) frag.appendChild(document.createTextNode(remaining));
+
+        textNode.parentNode.replaceChild(frag, textNode);
+    });
+
+    if (firstMark && !window.location.hash) {
+        firstMark.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+});
+</script>
+{% endif %}
 {% endblock %}

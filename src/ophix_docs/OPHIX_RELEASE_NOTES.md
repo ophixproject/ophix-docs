@@ -1,5 +1,13 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.07
+
+- Search V2: results now link to the specific section (h2/h3) within a page that
+  contains the match, with `?q=` forwarded so the page highlights all occurrences.
+- Doc page view: when opened via a search result link, all occurrences of the search
+  term are highlighted with `<mark>` (skipping code blocks). Scrolls to the first
+  match automatically if no anchor is present in the URL.
+
 ## 2026.05.30.06
 
 - Page name hover in docs index now uses the generic link hover colour, consistent

@@ -104,6 +104,7 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                 "page": page,
                 "rendered_markdown": mark_safe(html),
                 "title": page.title,
+                "search_query": request.GET.get("q", ""),
             }
 
             return TemplateResponse(
@@ -136,6 +137,9 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                 ).order_by("order")
                 for page in pages:
                     page.snippet = self._get_snippet(page.content_markdown, query)
+                    page.anchor, page.section_title = self._find_match_context(
+                        page.content_markdown, query, page.anchors
+                    )
                     results.append(page)
 
             context = {
@@ -150,6 +154,24 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                 "admin/ophix_docs/docsearch/change_list.html",
                 context,
             )
+
+        def _find_match_context(self, text, query, anchors):
+            import re
+            idx = text.lower().find(query.lower())
+            if idx == -1:
+                return None, None
+            title_to_slug = {a["title"]: a["slug"] for a in (anchors or [])}
+            heading_re = re.compile(r"^(#{2,3})\s+(.+)$", re.MULTILINE)
+            last_heading = None
+            for m in heading_re.finditer(text):
+                if m.start() > idx:
+                    break
+                last_heading = m
+            if not last_heading:
+                return None, None
+            title = last_heading.group(2).strip()
+            slug = title_to_slug.get(title)
+            return slug, title
 
         def _get_snippet(self, text, query, context_chars=150):
             idx = text.lower().find(query.lower())

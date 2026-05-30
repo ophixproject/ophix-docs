@@ -63,6 +63,13 @@
     text-decoration: underline;
 }
 
+.search-result-section {
+    font-size: 0.8em;
+    color: var(--admin-interface-generic-link-color);
+    opacity: 0.8;
+    margin-left: 0.5em;
+}
+
 .search-result-snippet {
     margin: 0.3em 0 0 0;
     font-size: 0.875em;
@@ -95,7 +102,7 @@
         <div class="search-results">
             {% for page in results %}
             <div class="search-result">
-                <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}">{{ page.title }}</a>
+                <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}?q={{ query|urlencode }}{% if page.anchor %}#{{ page.anchor }}{% endif %}">{{ page.title }}</a>{% if page.section_title %}<span class="search-result-section">§ {{ page.section_title }}</span>{% endif %}
                 <p class="search-result-snippet">{{ page.snippet }}</p>
             </div>
             {% endfor %}
