@@ -53,20 +53,19 @@
 }
 
 .doc-pages {
-    list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.doc-pages li {
+.doc-page-row {
     border-bottom: 1px solid var(--darkened-bg, #eee);
 }
 
-.doc-pages li:last-child {
+.doc-page-row:last-child {
     border-bottom: none;
 }
 
-.doc-pages li a {
+.doc-page-row a {
     display: block;
     padding: 0.6em 0.75em;
     text-decoration: none;
@@ -74,7 +73,7 @@
     border-left: 3px solid transparent;
 }
 
-.doc-pages li a:hover {
+.doc-page-row a:hover {
     border-left-color: var(--admin-interface-module-background-color);
     background: color-mix(in srgb, var(--admin-interface-module-background-color) 8%, transparent);
     color: var(--admin-interface-module-background-color);
@@ -91,13 +90,13 @@
         </div>
         <span class="doc-section-count">{{ data.pages|length }} page{{ data.pages|length|pluralize }}</span>
     </div>
-    <ul class="doc-pages"{% if data.collapsed %} style="display:none;"{% endif %}>
+    <div class="doc-pages"{% if data.collapsed %} style="display:none;"{% endif %}>
         {% for page in data.pages %}
-        <li>
+        <div class="doc-page-row">
             <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}">{{ page.title }}</a>
-        </li>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endfor %}
 </div>
@@ -113,12 +112,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.querySelectorAll(".doc-section").forEach(function(section) {
         const key = section.dataset.section;
-        const ul  = section.querySelector(".doc-pages");
-        const btn = section.querySelector(".doc-toggle-btn");
-        const hdr = section.querySelector(".doc-section-header");
+        const body = section.querySelector(".doc-pages");
+        const btn  = section.querySelector(".doc-toggle-btn");
+        const hdr  = section.querySelector(".doc-section-header");
 
         function setCollapsed(collapsed) {
-            ul.style.display = collapsed ? "none" : "";
+            body.style.display = collapsed ? "none" : "";
             btn.textContent = collapsed ? "▶" : "▼";
             savedState[key] = !collapsed;
             saveState();
@@ -130,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         hdr.addEventListener("click", function(e) {
             if (e.target.tagName === "A") return;
-            setCollapsed(ul.style.display !== "none");
+            setCollapsed(body.style.display !== "none");
         });
     });
 });
