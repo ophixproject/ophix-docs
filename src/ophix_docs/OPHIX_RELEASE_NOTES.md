@@ -1,5 +1,11 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.08
+
+- Search snippets are now stripped of markdown syntax before display — headings, bold,
+  italic, code fences, links, list markers, and blockquotes are all removed, leaving
+  clean readable plain text. The monospace/pre-wrap styling on snippets is removed accordingly.
+
 ## 2026.05.30.07
 
 - Search V2: results now link to the specific section (h2/h3) within a page that

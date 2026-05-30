@@ -173,15 +173,41 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
             slug = title_to_slug.get(title)
             return slug, title
 
+        def _strip_markdown(self, text):
+            import re
+            # Fenced code blocks → remove content, keep nothing
+            text = re.sub(r"```[^`]*```", "", text, flags=re.DOTALL)
+            # Inline code → unwrap
+            text = re.sub(r"`([^`]+)`", r"\1", text)
+            # Headings
+            text = re.sub(r"^#{1,6}\s+", "", text, flags=re.MULTILINE)
+            # Bold / italic
+            text = re.sub(r"\*{1,3}([^*\n]+)\*{1,3}", r"\1", text)
+            text = re.sub(r"_{1,3}([^_\n]+)_{1,3}", r"\1", text)
+            # Images → remove; links → keep text
+            text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", text)
+            text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)
+            # Horizontal rules
+            text = re.sub(r"^[-*_]{3,}\s*$", "", text, flags=re.MULTILINE)
+            # List markers
+            text = re.sub(r"^\s*[-*+]\s+", "", text, flags=re.MULTILINE)
+            text = re.sub(r"^\s*\d+\.\s+", "", text, flags=re.MULTILINE)
+            # Blockquotes
+            text = re.sub(r"^\s*>\s?", "", text, flags=re.MULTILINE)
+            # Collapse whitespace
+            text = re.sub(r"\n{3,}", "\n\n", text)
+            return text.strip()
+
         def _get_snippet(self, text, query, context_chars=150):
-            idx = text.lower().find(query.lower())
+            plain = self._strip_markdown(text)
+            idx = plain.lower().find(query.lower())
             if idx == -1:
-                return text[:200].strip() + "…"
+                return plain[:200].strip() + "…"
             start = max(0, idx - context_chars // 2)
-            end = min(len(text), idx + len(query) + context_chars // 2)
-            snippet = text[start:end].strip()
+            end = min(len(plain), idx + len(query) + context_chars // 2)
+            snippet = plain[start:end].strip()
             if start > 0:
                 snippet = "…" + snippet
-            if end < len(text):
+            if end < len(plain):
                 snippet = snippet + "…"
             return snippet
