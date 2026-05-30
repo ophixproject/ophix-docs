@@ -1,5 +1,10 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.06
+
+- Page name hover in docs index now uses the generic link hover colour, consistent
+  with anchor sub-link colours.
+
 ## 2026.05.30.05
 
 - Fix section collapsed/expanded state not persisting: switched from sessionStorage
