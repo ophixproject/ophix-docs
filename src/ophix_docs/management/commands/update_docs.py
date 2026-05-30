@@ -1,5 +1,7 @@
 import re
 import yaml
+import markdown as md_module
+from markdown.extensions.toc import TocExtension
 from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -102,6 +104,25 @@ class Command(BaseCommand):
             f"Documentation update complete for language '{language}'."
         ))
 
+    def _extract_anchors(self, body):
+        """Extract h2/h3 headings using Python-Markdown's toc extension for consistent slugs."""
+        md = md_module.Markdown(extensions=[TocExtension()])
+        md.convert(body)
+        anchors = []
+
+        def flatten(tokens):
+            for token in tokens:
+                if 2 <= token["level"] <= 3:
+                    anchors.append({
+                        "slug": token["id"],
+                        "title": token["name"],
+                        "level": token["level"],
+                    })
+                flatten(token.get("children", []))
+
+        flatten(md.toc_tokens)
+        return anchors
+
     def process_file(self, md_file: Path, language: str):
         """
         Parse and upsert a single markdown file.
@@ -147,6 +168,8 @@ class Command(BaseCommand):
             f"order={order}, section='{section}', lang='{language}'"
         )
 
+        anchors = self._extract_anchors(body)
+
         page, created = DocPage.objects.update_or_create(
             slug=slug,
             language=language,
@@ -156,6 +179,7 @@ class Command(BaseCommand):
                 'content_markdown': body,
                 'section': section,
                 'source_path': source_path,
+                'anchors': anchors,
             },
         )
         if created:

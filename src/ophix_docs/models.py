@@ -45,13 +45,26 @@ class DocPage(models.Model):
         default="",
         help_text=_("Absolute path to the source markdown file. Set by update_docs; blank for admin-created pages."),
     )
+    anchors = models.JSONField(
+        _("anchors"),
+        default=list,
+        blank=True,
+        help_text=_("Extracted h2/h3 headings. Populated by update_docs."),
+    )
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
 
     class Meta:
         ordering = ["order"]
         unique_together = [("slug", "language")]
         verbose_name = _("Page")
-        verbose_name_plural = _("Pages")
+        verbose_name_plural = _("Contents")
 
     def __str__(self):
         return f"{self.title} ({self.language or 'default'})"
+
+
+class DocSearch(DocPage):
+    class Meta:
+        proxy = True
+        verbose_name = _("Search")
+        verbose_name_plural = _("Search")

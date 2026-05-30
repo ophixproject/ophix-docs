@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 import markdown
 
-from .models import DocPage, DocSection
+from .models import DocPage, DocSection, DocSearch
 
 
 if getattr(settings, "SHOW_DOCS_MODEL", True):
@@ -80,7 +80,7 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
             context = {
                 **self.admin_site.each_context(request),
                 "pages_by_section": ordered_sections,
-                "title": _("Documentation"),
+                "title": _("Table of Contents"),
                 "language": language,
             }
 
@@ -96,7 +96,7 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
 
             html = markdown.markdown(
                 page.content_markdown,
-                extensions=["fenced_code", "tables"]
+                extensions=["fenced_code", "tables", "toc"]
             )
 
             context = {
@@ -111,3 +111,55 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                 "admin/ophix_docs/docpage/change_form.html",
                 context,
             )
+
+    @admin.register(DocSearch)
+    class DocSearchAdmin(admin.ModelAdmin):
+
+        def has_add_permission(self, request):
+            return False
+
+        def has_delete_permission(self, request, obj=None):
+            return False
+
+        def has_change_permission(self, request, obj=None):
+            return False
+
+        def changelist_view(self, request, extra_context=None):
+            query = request.GET.get("q", "").strip()
+            results = []
+
+            if query:
+                from django.db.models import Q
+                pages = DocPage.objects.filter(
+                    Q(title__icontains=query) | Q(content_markdown__icontains=query),
+                    language="",
+                ).order_by("order")
+                for page in pages:
+                    page.snippet = self._get_snippet(page.content_markdown, query)
+                    results.append(page)
+
+            context = {
+                **self.admin_site.each_context(request),
+                "title": _("Search Documentation"),
+                "query": query,
+                "results": results,
+            }
+
+            return TemplateResponse(
+                request,
+                "admin/ophix_docs/docsearch/change_list.html",
+                context,
+            )
+
+        def _get_snippet(self, text, query, context_chars=150):
+            idx = text.lower().find(query.lower())
+            if idx == -1:
+                return text[:200].strip() + "…"
+            start = max(0, idx - context_chars // 2)
+            end = min(len(text), idx + len(query) + context_chars // 2)
+            snippet = text[start:end].strip()
+            if start > 0:
+                snippet = "…" + snippet
+            if end < len(text):
+                snippet = snippet + "…"
+            return snippet

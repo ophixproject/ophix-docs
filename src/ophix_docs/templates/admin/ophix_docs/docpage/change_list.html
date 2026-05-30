@@ -65,22 +65,77 @@
     border-bottom: none;
 }
 
-.doc-page-row a {
-    display: block;
-    padding: 0.6em 0.75em;
-    text-decoration: none;
-    color: var(--body-fg);
+.doc-page-header {
+    display: flex;
+    align-items: center;
     border-left: 3px solid transparent;
 }
 
-.doc-page-row a:hover {
+.doc-page-header:hover {
     border-left-color: var(--admin-interface-module-background-color);
     background: color-mix(in srgb, var(--admin-interface-module-background-color) 8%, transparent);
+}
+
+.doc-page-header:hover a {
     color: var(--admin-interface-module-background-color);
 }
 
+.page-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 0.7em;
+    cursor: pointer;
+    padding: 0 0.3em 0 0.75em;
+    color: var(--admin-interface-module-background-color);
+    flex-shrink: 0;
+    line-height: 1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
+.page-toggle-spacer {
+    display: inline-block;
+    width: 1.7em;
+    flex-shrink: 0;
+}
+
+.doc-page-header a {
+    display: block;
+    flex: 1;
+    padding: 0.6em 0.75em 0.6em 0.4em;
+    text-decoration: none;
+    color: var(--body-fg);
+}
+
+.doc-page-anchors {
+    padding: 0.2em 0 0.4em 0;
+    background: color-mix(in srgb, var(--admin-interface-module-background-color) 4%, transparent);
+}
+
+.doc-anchor-link {
+    display: block;
+    padding: 0.3em 0.75em 0.3em 2.8em;
+    font-size: 0.875em;
+    text-decoration: none;
+    color: var(--admin-interface-generic-link-color);
+    opacity: 0.85;
+}
+
+.doc-anchor-link.level-3 {
+    padding-left: 4em;
+    font-size: 0.83em;
+    opacity: 0.7;
+}
+
+.doc-anchor-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
 [data-theme="dark"] .doc-section-name,
-[data-theme="dark"] .doc-toggle-btn {
+[data-theme="dark"] .doc-toggle-btn,
+[data-theme="dark"] .page-toggle-btn {
     color: var(--admin-interface-generic-link-color);
 }
 </style>
@@ -98,7 +153,22 @@
     <div class="doc-pages"{% if data.collapsed %} style="display:none;"{% endif %}>
         {% for page in data.pages %}
         <div class="doc-page-row">
-            <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}">{{ page.title }}</a>
+            <div class="doc-page-header">
+                {% if page.anchors %}
+                <button class="page-toggle-btn" type="button" data-page="{{ page.id }}" aria-expanded="false">▶</button>
+                {% else %}
+                <span class="page-toggle-spacer"></span>
+                {% endif %}
+                <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}">{{ page.title }}</a>
+            </div>
+            {% if page.anchors %}
+            <div class="doc-page-anchors" id="anchors-{{ page.id }}" style="display:none;">
+                {% for anchor in page.anchors %}
+                <a href="{% url 'admin:ophix_docs_docpage_change' page.id %}#{{ anchor.slug }}"
+                   class="doc-anchor-link level-{{ anchor.level }}">{{ anchor.title }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -108,33 +178,61 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const STORAGE_KEY = "ophix_docs_sections";
-    let savedState = {};
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) { try { savedState = JSON.parse(stored); } catch(e) {} }
+    var SECTION_KEY = "ophix_docs_sections";
+    var PAGE_KEY = "ophix_docs_pages";
+    var sectionState = {};
+    var pageState = {};
 
-    function saveState() { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(savedState)); }
+    try { sectionState = JSON.parse(sessionStorage.getItem(SECTION_KEY)) || {}; } catch(e) {}
+    try { pageState = JSON.parse(sessionStorage.getItem(PAGE_KEY)) || {}; } catch(e) {}
 
+    function saveSections() { sessionStorage.setItem(SECTION_KEY, JSON.stringify(sectionState)); }
+    function savePages() { sessionStorage.setItem(PAGE_KEY, JSON.stringify(pageState)); }
+
+    // Section collapse/expand
     document.querySelectorAll(".doc-section").forEach(function(section) {
-        const key = section.dataset.section;
-        const body = section.querySelector(".doc-pages");
-        const btn  = section.querySelector(".doc-toggle-btn");
-        const hdr  = section.querySelector(".doc-section-header");
+        var key = section.dataset.section;
+        var body = section.querySelector(".doc-pages");
+        var btn  = section.querySelector(".doc-toggle-btn");
+        var hdr  = section.querySelector(".doc-section-header");
 
         function setCollapsed(collapsed) {
             body.style.display = collapsed ? "none" : "";
             btn.textContent = collapsed ? "▶" : "▼";
-            savedState[key] = !collapsed;
-            saveState();
+            sectionState[key] = !collapsed;
+            saveSections();
         }
 
-        if (savedState.hasOwnProperty(key) && !savedState[key]) {
+        if (sectionState.hasOwnProperty(key) && !sectionState[key]) {
             setCollapsed(true);
         }
 
         hdr.addEventListener("click", function(e) {
-            if (e.target.tagName === "A") return;
+            if (e.target.tagName === "A" || e.target.classList.contains("page-toggle-btn")) return;
             setCollapsed(body.style.display !== "none");
+        });
+    });
+
+    // Page anchor collapse/expand
+    document.querySelectorAll(".page-toggle-btn").forEach(function(btn) {
+        var pageId = btn.dataset.page;
+        var anchorsDiv = document.getElementById("anchors-" + pageId);
+
+        function setExpanded(expanded) {
+            anchorsDiv.style.display = expanded ? "" : "none";
+            btn.textContent = expanded ? "▼" : "▶";
+            btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+            pageState[pageId] = expanded;
+            savePages();
+        }
+
+        if (pageState[pageId]) {
+            setExpanded(true);
+        }
+
+        btn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            setExpanded(anchorsDiv.style.display === "none");
         });
     });
 });

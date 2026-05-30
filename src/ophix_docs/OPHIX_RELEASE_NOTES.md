@@ -1,5 +1,16 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.04
+
+- Renamed "Pages" to "Contents" in sidebar; docs index heading changed to "Table
+  of Contents".
+- Page links in docs index are now collapsible; h2/h3 anchors appear as sub-links
+  under each page. Anchors extracted and stored by update_docs (run after upgrade).
+- Added "Search" entry in sidebar: full-text search across page titles and content.
+- Dark mode: h1/h2 headings in doc pages now lighten with the same per-theme accent
+  lightness setting as links.
+- "Back to Index" renamed to "Back to Contents".
+
 ## 2026.05.30.03
 
 - Docs index section headings and toggle buttons now lighten in dark mode using the
