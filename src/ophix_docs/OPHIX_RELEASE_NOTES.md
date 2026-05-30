@@ -1,5 +1,10 @@
 # Ophix Docs Release Notes
 
+## 2026.05.30.03
+
+- Docs index section headings and toggle buttons now lighten in dark mode using the
+  same per-theme accent lightness setting as generic links.
+
 ## 2026.05.30.02
 
 - Fix docs index bullets: replaced ul/li with div elements to prevent Django admin
