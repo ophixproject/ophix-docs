@@ -1,2 +1,2 @@
-__version__ = "2026.05.30.09"
+__version__ = "2026.05.31.01"
 __package_name__ = "ophix-docs"
