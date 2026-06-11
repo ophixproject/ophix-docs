@@ -92,7 +92,10 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
 
         # Render markdown page
         def change_view(self, request, object_id, form_url="", extra_context=None):
+            from django.http import Http404
             page = self.get_object(request, object_id)
+            if page is None:
+                raise Http404
 
             html = markdown.markdown(
                 page.content_markdown,
