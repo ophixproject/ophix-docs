@@ -44,15 +44,16 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                     default=Value(-1),
                     output_field=IntegerField(),
                 )
-            ).order_by("slug", "-priority")  # requested language first
+            ).order_by("app_label", "slug", "-priority")  # requested language first
 
-            # Step 2: Deduplicate by slug, keep first (requested language preferred)
-            pages_by_slug = {}
+            # Step 2: Deduplicate by (app_label, slug), keep first (requested language preferred)
+            pages_by_key = {}
             for page in all_pages:
-                if page.slug not in pages_by_slug:
-                    pages_by_slug[page.slug] = page
+                key = (page.app_label, page.slug)
+                if key not in pages_by_key:
+                    pages_by_key[key] = page
 
-            pages = list(pages_by_slug.values())
+            pages = list(pages_by_key.values())
 
             # Step 3: Group by section name
             pages_by_section = {}

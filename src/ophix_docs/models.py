@@ -20,6 +20,13 @@ class DocSection(models.Model):
 
 
 class DocPage(models.Model):
+    app_label = models.CharField(
+        _("app label"),
+        max_length=100,
+        blank=True,
+        default="",
+        help_text=_("Python module name of the app that owns this page (e.g. ophix_core). Empty for primary docs path."),
+    )
     slug = models.SlugField(_("slug"))
     language = models.CharField(
         _("language"),
@@ -55,7 +62,7 @@ class DocPage(models.Model):
 
     class Meta:
         ordering = ["order"]
-        unique_together = [("slug", "language")]
+        unique_together = [("app_label", "slug", "language")]
         verbose_name = _("Page")
         verbose_name_plural = _("Contents")
 

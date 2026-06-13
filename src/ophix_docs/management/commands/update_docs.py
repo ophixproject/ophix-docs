@@ -43,9 +43,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         language = options['language']
 
-        # Gather all docs paths: primary path + app paths
-        docs_paths = [Path(options['path'])]
+        # Gather all (docs_path, app_label) pairs: primary path has app_label=""
         include_apps = [a.strip() for a in options['include_app_docs'].split(',') if a.strip()]
+        docs_path_apps = [(Path(options['path']), "")]
 
         for app_name in include_apps:
             spec = find_spec(app_name)
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 app_docs = Path(spec.origin).parent / 'docs'
                 if app_docs.exists():
                     self.stdout.write(f"Found docs for app '{app_name}' at {app_docs}")
-                    docs_paths.append(app_docs)
+                    docs_path_apps.append((app_docs, app_name))
                 else:
                     self.stdout.write(self.style.WARNING(f"No 'docs' folder found for app '{app_name}'"))
             else:
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         # Merge sections.yaml files — name and collapsed only.
         # First definition of a section name (for this language) wins for the collapsed flag.
         merged_sections = {}  # name -> collapsed
-        for docs_path in docs_paths:
+        for docs_path, _ in docs_path_apps:
             sections_file = docs_path / "sections.yaml"
             if sections_file.exists():
                 with sections_file.open(encoding='utf-8') as f:
@@ -89,9 +89,9 @@ class Command(BaseCommand):
         # Track the minimum page order per section to drive section ordering.
         section_min_order = {}  # section_name -> lowest page order within that section
 
-        for docs_path in docs_paths:
+        for docs_path, app_label in docs_path_apps:
             for md_file in sorted(docs_path.glob("*.md")):
-                section_name, page_order = self.process_file(md_file, language)
+                section_name, page_order = self.process_file(md_file, language, app_label)
                 if section_name:
                     if section_name not in section_min_order or page_order < section_min_order[section_name]:
                         section_min_order[section_name] = page_order
@@ -123,7 +123,7 @@ class Command(BaseCommand):
         flatten(md.toc_tokens)
         return anchors
 
-    def process_file(self, md_file: Path, language: str):
+    def process_file(self, md_file: Path, language: str, app_label: str = ""):
         """
         Parse and upsert a single markdown file.
         Records the absolute source path on the page so purge_docs --deleted can find it.
@@ -171,6 +171,7 @@ class Command(BaseCommand):
         anchors = self._extract_anchors(body)
 
         page, created = DocPage.objects.update_or_create(
+            app_label=app_label,
             slug=slug,
             language=language,
             defaults={

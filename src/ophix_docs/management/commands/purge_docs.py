@@ -59,6 +59,12 @@ class Command(BaseCommand):
             help="Restrict to a specific language code. Defaults to the default language ('').",
         )
         parser.add_argument(
+            '--app',
+            default="",
+            metavar='APP_LABEL',
+            help="Restrict to pages from a specific app (e.g. ophix_core). Defaults to '' (primary docs path).",
+        )
+        parser.add_argument(
             '--dry-run',
             action='store_true',
             help="Show what would be deleted without deleting anything.",
@@ -69,6 +75,7 @@ class Command(BaseCommand):
         purge_all = options['all']
         purge_deleted = options['deleted']
         language = options['language']
+        app_label = options['app']
         dry_run = options['dry_run']
 
         # Validate: exactly one mode must be selected
@@ -82,18 +89,20 @@ class Command(BaseCommand):
             raise CommandError("--all and --deleted cannot be combined with each other or with slug arguments.")
 
         if purge_all:
-            self._purge_all(language, dry_run)
+            self._purge_all(language, app_label, dry_run)
         elif purge_deleted:
-            self._purge_deleted(language, dry_run)
+            self._purge_deleted(language, app_label, dry_run)
         else:
-            self._purge_slugs(slugs, language, dry_run)
+            self._purge_slugs(slugs, language, app_label, dry_run)
 
     # ------------------------------------------------------------------
     # Mode implementations
     # ------------------------------------------------------------------
 
-    def _purge_all(self, language: str, dry_run: bool):
+    def _purge_all(self, language: str, app_label: str, dry_run: bool):
         qs = DocPage.objects.filter(language=language)
+        if app_label:
+            qs = qs.filter(app_label=app_label)
         count = qs.count()
         lang_label = f"language '{language}'" if language else "default language"
 
@@ -114,11 +123,13 @@ class Command(BaseCommand):
             f"Deleted {count} page(s) for {lang_label}."
         ))
 
-    def _purge_deleted(self, language: str, dry_run: bool):
+    def _purge_deleted(self, language: str, app_label: str, dry_run: bool):
         from pathlib import Path
 
         # Only consider pages that were imported from disk (source_path is set)
         qs = DocPage.objects.filter(language=language).exclude(source_path="")
+        if app_label:
+            qs = qs.filter(app_label=app_label)
         candidates = []
         for page in qs:
             if not Path(page.source_path).exists():
@@ -147,15 +158,25 @@ class Command(BaseCommand):
             f"Deleted {len(candidates)} page(s) with missing source files."
         ))
 
-    def _purge_slugs(self, slugs: list[str], language: str, dry_run: bool):
+    def _purge_slugs(self, slugs: list[str], language: str, app_label: str, dry_run: bool):
         found = []
         missing = []
         for slug in slugs:
-            try:
-                page = DocPage.objects.get(slug=slug, language=language)
-                found.append(page)
-            except DocPage.DoesNotExist:
+            qs = DocPage.objects.filter(slug=slug, language=language)
+            if app_label:
+                qs = qs.filter(app_label=app_label)
+            matches = list(qs)
+            if not matches:
                 missing.append(slug)
+            elif len(matches) > 1:
+                self.stdout.write(self.style.WARNING(
+                    f"Slug '{slug}' matches {len(matches)} pages across apps — use --app to disambiguate:"
+                ))
+                for page in matches:
+                    app = page.app_label or "(primary)"
+                    self.stdout.write(f"  --app {app}  ({page.title})")
+            else:
+                found.append(matches[0])
 
         if missing:
             lang_label = f" (language '{language}')" if language else ""
