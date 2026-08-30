@@ -1,6 +1,6 @@
 # Ophix Docs Release Notes
 
-## Unreleased
+## 2026.08.30.01
 
 - Table of Contents (docpage changelist): removed the `font-size` overrides on
   `.doc-anchor-link` (0.875em) and `.doc-anchor-link.level-3` (0.83em) so page titles
