@@ -1,5 +1,12 @@
 # Ophix Docs Release Notes
 
+## Unreleased
+
+- Table of Contents (docpage changelist): removed the `font-size` overrides on
+  `.doc-anchor-link` (0.875em) and `.doc-anchor-link.level-3` (0.83em) so page titles
+  and every level of anchor sub-item render at the same, standard body font size.
+  Indentation and opacity are still used to convey nesting depth.
+
 ## 2026.05.30.09
 
 - Search snippet stripping now also handles markdown tables: separator rows (`| --- |`)
