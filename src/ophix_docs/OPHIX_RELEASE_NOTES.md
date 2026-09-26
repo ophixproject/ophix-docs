@@ -1,5 +1,9 @@
 # Ophix Docs Release Notes
 
+## 2026.09.26.01
+
+- Verified real compatibility under Python 3.14 (not just added the classifier) as part of the taskserver-release-wave compatibility sweep, and added `Programming Language :: Python :: 3.14` to the package classifiers.
+
 ## 2026.08.30.01
 
 - Table of Contents (docpage changelist): removed the `font-size` overrides on
