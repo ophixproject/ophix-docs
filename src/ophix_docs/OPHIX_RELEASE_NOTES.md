@@ -1,5 +1,9 @@
 # Ophix Docs Release Notes
 
+## 2026.09.26.02
+
+- i18n regression check: the `"General"` fallback section label shown in the admin Table of Contents when a page has no `section` set was unwrapped. Wrapped in `gettext_lazy`.
+
 ## 2026.09.26.01
 
 - Verified real compatibility under Python 3.14 (not just added the classifier) as part of the taskserver-release-wave compatibility sweep, and added `Programming Language :: Python :: 3.14` to the package classifiers.

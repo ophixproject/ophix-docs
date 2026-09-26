@@ -58,7 +58,7 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
             # Step 3: Group by section name
             pages_by_section = {}
             for page in pages:
-                pages_by_section.setdefault(page.section or "General", []).append(page)
+                pages_by_section.setdefault(page.section or str(_("General")), []).append(page)
 
             # Step 4: Apply DocSection ordering
             ordered_sections = OrderedDict()
