@@ -1,10 +1,8 @@
 # ophix-docs
 
-Inline documentation plugin for [ophix-server-base](https://github.com/ophixproject/ophix-server-base).
+**Documentation that lives where you actually need it** — searchable, in-admin docs for every [Ophix](https://ophix.io) server.
 
-Stores markdown documentation pages in the database and displays them in the Django
-admin. Each Ophix package ships its own docs — install the package and the docs
-come with it. A single management command loads them all.
+Nobody wants to tab away from the admin panel to some separate wiki or GitHub page just to remember how a feature works — and that external doc is never quite sure which version you're actually running anyway. Every installed Ophix package ships its own docs pages; `ophix-docs` makes them available right alongside the data they describe, always matching whatever's actually installed.
 
 ---
 
