@@ -1,12 +1,11 @@
 # Ophix Docs Release Notes
 
-## Unreleased
+## 2026.10.06.01
 
 - Added opt-in `{{ server_url }}` token substitution to the DocPage change view and to the
   search results snippet/match-context logic (`DocSearchAdmin`), so a search preview shows
   the interpolated value rather than the literal token. Markdown content with no tokens in
-  it renders exactly as before — this lands the mechanism only; no shipped doc content uses
-  the token yet. Intended for self-referential operational examples (e.g.
+  it renders exactly as before. Intended for self-referential operational examples (e.g.
   `cred-client quickstart {{ server_url }} my-client-name`), not for passages describing a
   different or not-yet-existing server (install instructions should stay generic).
 
