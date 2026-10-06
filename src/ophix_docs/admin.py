@@ -151,9 +151,10 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                     language="",
                 ).order_by("order")
                 for page in pages:
-                    page.snippet = self._get_snippet(page.content_markdown, query)
+                    content = _interpolate_doc_tokens(page.content_markdown, request)
+                    page.snippet = self._get_snippet(content, query)
                     page.anchor, page.section_title = self._find_match_context(
-                        page.content_markdown, query, page.anchors
+                        content, query, page.anchors
                     )
                     results.append(page)
 
