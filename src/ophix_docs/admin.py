@@ -1,3 +1,6 @@
+import functools
+import importlib
+import logging
 import re
 from collections import OrderedDict
 
@@ -12,8 +15,43 @@ import markdown
 
 from .models import DocPage, DocSection, DocSearch
 
+logger = logging.getLogger(__name__)
+
 
 _DOC_TOKEN_RE = re.compile(r"\{\{\s*([\w-]+)\s*\}\}")
+
+
+@functools.lru_cache(maxsize=1)
+def _discover_plugin_doc_tokens():
+    """
+    {{ token }} values contributed by installed plugins via an optional
+    get_doc_tokens() hook in their top-level package. Discovered the same
+    way install_configure/get_revisions_targets are discovered — iterating
+    entry_points(group="ophix.plugins") — deliberately holding no hardcoded
+    catalog of domain packages here. A plugin simply not implementing the
+    hook contributes nothing; no error. Cached for the life of the process
+    (Django processes restart on deploy, so this doesn't need to react to a
+    mid-process pip install).
+    """
+    from importlib.metadata import entry_points
+
+    tokens = {}
+    for ep in entry_points(group="ophix.plugins"):
+        try:
+            mod = importlib.import_module(ep.value)
+        except ImportError:
+            logger.warning("Could not import plugin module %r for doc token discovery", ep.value)
+            continue
+        hook = getattr(mod, "get_doc_tokens", None)
+        if hook is None:
+            continue  # optional hook — plugin simply doesn't contribute doc tokens
+        try:
+            contributed = hook() or {}
+        except Exception:
+            logger.exception("get_doc_tokens() raised in %s — skipping its tokens", ep.value)
+            continue
+        tokens.update(contributed)
+    return tokens
 
 
 def _interpolate_doc_tokens(content, request):
@@ -23,8 +61,12 @@ def _interpolate_doc_tokens(content, request):
     contributing plugin isn't installed) renders as blank rather than
     literally — this is deliberate so an optional plugin-contributed token
     disappears cleanly when that plugin isn't present, at the cost of a
-    genuine typo failing silently instead of showing broken {{ }} syntax."""
+    genuine typo failing silently instead of showing broken {{ }} syntax.
+
+    Built-in request-derived tokens are applied last so they always win over
+    a same-named plugin-contributed token."""
     values = {
+        **_discover_plugin_doc_tokens(),
         "server_url": request.build_absolute_uri("/").rstrip("/"),
     }
     return _DOC_TOKEN_RE.sub(lambda m: values.get(m.group(1), ""), content)

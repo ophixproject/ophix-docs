@@ -4,10 +4,18 @@
 
 - `{{ token }}` substitution is now regex-based rather than per-known-literal: any
   `{{ }}`-shaped pattern not matching a known token now renders as blank instead of
-  showing the literal `{{ ... }}` text. This is deliberate — it lets a future
-  plugin-contributed, optional token (e.g. a Client Management doc blurb) disappear
-  cleanly on servers where that plugin isn't installed, at the cost of a genuine typo
-  in a token name now failing silently instead of visibly.
+  showing the literal `{{ ... }}` text. This is deliberate — it lets an optional
+  plugin-contributed token disappear cleanly on servers where that plugin isn't
+  installed, at the cost of a genuine typo in a token name now failing silently
+  instead of visibly.
+- `{{ token }}` substitution now also discovers plugin-contributed tokens via an
+  optional `get_doc_tokens()` hook, found the same way `install_configure`/
+  `get_revisions_targets()` are discovered (`entry_points(group="ophix.plugins")`,
+  no hardcoded catalog of domain packages). `ophix-creds`, `ophix-confs`,
+  `ophix-certs`, `ophix-tasks`, and `ophix-zones` all implement it, contributing
+  `client_package`/`client_command` so shared docs like Client Quickstart
+  (`ophix-server-base`) can render the correct domain-specific example instead
+  of staying generic.
 
 ## 2026.10.06.01
 
