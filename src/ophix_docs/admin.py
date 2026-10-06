@@ -1,3 +1,4 @@
+import re
 from collections import OrderedDict
 
 from django.conf import settings
@@ -12,15 +13,21 @@ import markdown
 from .models import DocPage, DocSection, DocSearch
 
 
+_DOC_TOKEN_RE = re.compile(r"\{\{\s*([\w-]+)\s*\}\}")
+
+
 def _interpolate_doc_tokens(content, request):
     """Replace {{ token }} placeholders with live values. Opt-in only — markdown
-    with no tokens in it is returned unchanged."""
+    with no tokens in it is returned unchanged. Any {{ }}-shaped pattern that
+    doesn't match a known token (a typo, or an optional token whose
+    contributing plugin isn't installed) renders as blank rather than
+    literally — this is deliberate so an optional plugin-contributed token
+    disappears cleanly when that plugin isn't present, at the cost of a
+    genuine typo failing silently instead of showing broken {{ }} syntax."""
     values = {
         "server_url": request.build_absolute_uri("/").rstrip("/"),
     }
-    for token, value in values.items():
-        content = content.replace("{{ " + token + " }}", value)
-    return content
+    return _DOC_TOKEN_RE.sub(lambda m: values.get(m.group(1), ""), content)
 
 
 if getattr(settings, "SHOW_DOCS_MODEL", True):

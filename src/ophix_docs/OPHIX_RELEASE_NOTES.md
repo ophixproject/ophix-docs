@@ -1,5 +1,14 @@
 # Ophix Docs Release Notes
 
+## Unreleased
+
+- `{{ token }}` substitution is now regex-based rather than per-known-literal: any
+  `{{ }}`-shaped pattern not matching a known token now renders as blank instead of
+  showing the literal `{{ ... }}` text. This is deliberate — it lets a future
+  plugin-contributed, optional token (e.g. a Client Management doc blurb) disappear
+  cleanly on servers where that plugin isn't installed, at the cost of a genuine typo
+  in a token name now failing silently instead of visibly.
+
 ## 2026.10.06.01
 
 - Added opt-in `{{ server_url }}` token substitution to the DocPage change view and to the
