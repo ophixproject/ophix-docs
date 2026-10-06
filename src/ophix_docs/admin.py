@@ -12,6 +12,17 @@ import markdown
 from .models import DocPage, DocSection, DocSearch
 
 
+def _interpolate_doc_tokens(content, request):
+    """Replace {{ token }} placeholders with live values. Opt-in only — markdown
+    with no tokens in it is returned unchanged."""
+    values = {
+        "server_url": request.build_absolute_uri("/").rstrip("/"),
+    }
+    for token, value in values.items():
+        content = content.replace("{{ " + token + " }}", value)
+    return content
+
+
 if getattr(settings, "SHOW_DOCS_MODEL", True):
     @admin.register(DocPage)
     class DocPageAdmin(admin.ModelAdmin):
@@ -99,7 +110,7 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
                 raise Http404
 
             html = markdown.markdown(
-                page.content_markdown,
+                _interpolate_doc_tokens(page.content_markdown, request),
                 extensions=["fenced_code", "tables", "toc"]
             )
 

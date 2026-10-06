@@ -1,5 +1,13 @@
 # Ophix Docs Release Notes
 
+## Unreleased
+
+- Added opt-in `{{ server_url }}` token substitution to the DocPage change view. Markdown
+  content with no tokens in it renders exactly as before — this lands the mechanism only;
+  no shipped doc content uses the token yet. Intended for self-referential operational
+  examples (e.g. `cred-client quickstart {{ server_url }} my-client-name`), not for passages
+  describing a different or not-yet-existing server (install instructions should stay generic).
+
 ## 2026.10.04.01
 
 - Reworked `README.md`'s opening with a hook-first pitch — docs that live where you actually
