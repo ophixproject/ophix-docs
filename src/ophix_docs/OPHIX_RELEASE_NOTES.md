@@ -1,6 +1,6 @@
 # Ophix Docs Release Notes
 
-## Unreleased
+## 2026.10.07.01
 
 - `{{ token }}` substitution is now regex-based rather than per-known-literal: any
   `{{ }}`-shaped pattern not matching a known token now renders as blank instead of
