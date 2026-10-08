@@ -88,6 +88,38 @@ if getattr(settings, "SHOW_DOCS_MODEL", True):
         def has_change_permission(self, request, obj=None):
             return False
 
+        def get_urls(self):
+            from django.urls import path
+            urls = super().get_urls()
+            custom = [
+                path(
+                    "crosslink/<str:app_label>/<slug:slug>/",
+                    self.admin_site.admin_view(self.crosslink_redirect_view),
+                    name="ophix_docs_docpage_crosslink",
+                ),
+            ]
+            return custom + urls
+
+        def crosslink_redirect_view(self, request, app_label, slug):
+            # Stable cross-link target: (app_label, slug) never changes even
+            # though the underlying DocPage's pk depends on import order and
+            # can differ between servers. Only usable for docs guaranteed to
+            # exist on the installing server — same-package docs, or docs
+            # belonging to ophix.core (an unconditional dependency of every
+            # domain) — since a missing target 404s with no fallback.
+            from django.http import Http404
+            from django.shortcuts import redirect
+            from django.urls import reverse
+
+            language = translation.get_language() or ""
+            page = (
+                DocPage.objects.filter(app_label=app_label, slug=slug, language=language).first()
+                or DocPage.objects.filter(app_label=app_label, slug=slug, language="").first()
+            )
+            if page is None:
+                raise Http404(f"No documentation page found for app_label={app_label!r} slug={slug!r}")
+            return redirect(reverse("admin:ophix_docs_docpage_change", args=[page.pk]))
+
         # Documentation index
         def changelist_view(self, request, extra_context=None):
             # Determine requested language (fallback to default)

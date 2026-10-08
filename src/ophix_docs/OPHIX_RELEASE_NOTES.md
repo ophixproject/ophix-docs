@@ -1,5 +1,17 @@
 # Ophix Docs Release Notes
 
+## 2026.10.08.01
+
+- Added a cross-link redirect view: `DocPageAdmin` now exposes
+  `admin:ophix_docs_docpage_crosslink` at `crosslink/<app_label>/<slug>/`, resolving to the
+  real change-view URL for the `DocPage` matching that `(app_label, slug)` pair. This was a
+  designed-but-never-implemented feature — existing `[text](slug)`-style links in several
+  packages' docs were pointing at a redirect that didn't exist, 404ing on GitHub and doing
+  nothing useful in the rendered admin page either. Only safe to use for links pointing at
+  docs guaranteed to exist on the installing server (the same package's own docs, or
+  `ophix.core`'s docs, since every domain depends on `ophix-server-base` unconditionally) —
+  a target that doesn't exist on a given server still 404s, there's no fallback.
+
 ## 2026.10.07.01
 
 - `{{ token }}` substitution is now regex-based rather than per-known-literal: any
