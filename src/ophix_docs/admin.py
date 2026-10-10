@@ -36,6 +36,20 @@ def _discover_plugin_doc_tokens():
     from importlib.metadata import entry_points
 
     tokens = {}
+
+    # ophix.core is the one deliberate direct-import exception, same as
+    # every other "ophix-server-base is special" case in this project
+    # (ophix-revisions' own target discovery, etc.) — it never registers
+    # itself as an `ophix.plugins` entry point (it's the foundation every
+    # plugin is discovered *against*, not a plugin itself), so the generic
+    # loop below would never find its get_doc_tokens() otherwise.
+    try:
+        from ophix.core import get_doc_tokens as _core_get_doc_tokens
+
+        tokens.update(_core_get_doc_tokens() or {})
+    except Exception:
+        logger.exception("ophix.core.get_doc_tokens() raised — skipping its tokens")
+
     for ep in entry_points(group="ophix.plugins"):
         try:
             mod = importlib.import_module(ep.value)

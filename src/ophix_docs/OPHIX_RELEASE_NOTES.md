@@ -1,5 +1,17 @@
 # Ophix Docs Release Notes
 
+## Unreleased
+
+- `{{ token }}` discovery now also special-cases `ophix.core` with a direct
+  import, alongside the existing generic `entry_points(group="ophix.plugins")`
+  loop. `ophix-server-base` never registers itself as an `ophix.plugins`
+  entry point (it's the foundation every other plugin is discovered
+  *against*, not a plugin itself), so its own new `get_doc_tokens()`
+  (`backup_target`/`backup_target_encrypted`, see `ophix-server-base`'s
+  own release notes) would otherwise never be found by the generic loop —
+  same "one deliberate direct-import exception" pattern already used
+  elsewhere in the project for this exact package.
+
 ## 2026.10.08.01
 
 - Added a cross-link redirect view: `DocPageAdmin` now exposes
