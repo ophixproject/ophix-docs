@@ -1,6 +1,6 @@
 # Ophix Docs Release Notes
 
-## Unreleased
+## 2026.10.10.01
 
 - `{{ token }}` discovery now also special-cases `ophix.core` with a direct
   import, alongside the existing generic `entry_points(group="ophix.plugins")`
